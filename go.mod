@@ -4,13 +4,14 @@ go 1.22.5
 
 require (
 	github.com/ddkwork/app v0.0.0-20240718002212-c6cbd767fae3
-	github.com/ddkwork/golibrary v0.0.0-20240717170943-d7de0350c797
+	github.com/ddkwork/golibrary v0.0.0-20240727162945-a82f6b828603
+	github.com/ebitengine/purego v0.8.0-alpha.3.0.20240717153933-b9dbbd0c9d2c
 	github.com/richardwilkes/unison v0.72.1
 	github.com/saferwall/pe v1.5.4
 	github.com/stretchr/testify v1.9.0
 	github.com/tc-hib/winres v0.3.1
 	github.com/winlabs/gowin32 v0.0.0-20221003142512-0d265587d3c9
-	golang.org/x/exp v0.0.0-20240707233637-46b078467d37
+	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56
 	golang.org/x/image v0.18.0
 	golang.org/x/sys v0.22.0
 )
@@ -23,8 +24,7 @@ require (
 	github.com/dave/dst v0.27.3 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dc0d/caseconv v0.5.0 // indirect
-	github.com/dlclark/regexp2 v1.11.0 // indirect
-	github.com/ebitengine/purego v0.7.1 // indirect
+	github.com/dlclark/regexp2 v1.11.2 // indirect
 	github.com/edsrzf/mmap-go v1.1.0 // indirect
 	github.com/fatih/color v1.17.0 // indirect
 	github.com/go-enry/go-enry/v2 v2.8.8 // indirect
@@ -41,7 +41,7 @@ require (
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/pkg/term v1.2.0-beta.2 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/richardwilkes/json v0.2.0 // indirect
+	github.com/richardwilkes/json v0.3.0 // indirect
 	github.com/richardwilkes/toolbox v1.114.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/secDre4mer/pkcs7 v0.0.0-20240322103146-665324a4461d // indirect
@@ -50,11 +50,10 @@ require (
 	github.com/spyre-project/spyre v1.2.5 // indirect
 	github.com/valyala/fastjson v1.6.4 // indirect
 	github.com/yuin/goldmark v1.7.4 // indirect
-	github.com/zzl/go-win32api/v2 v2.2.0 // indirect
 	golang.org/x/arch v0.8.0 // indirect
 	golang.org/x/mod v0.19.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
-	golang.org/x/term v0.21.0 // indirect
+	golang.org/x/term v0.22.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/tools v0.23.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

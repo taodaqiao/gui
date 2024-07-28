@@ -1,12 +1,17 @@
 package sdk
 
 import (
-	"reflect"
+	"fmt"
+	"github.com/ddkwork/golibrary/mylog"
+	"github.com/ebitengine/purego"
+	"github.com/stretchr/testify/assert"
 	"testing"
 	"unsafe"
+)
 
-	"github.com/ddkwork/golibrary/mylog"
-	"github.com/stretchr/testify/assert"
+const (
+	COMMUNICATION_BUFFER_SIZE     = 0x100
+	TCP_END_OF_BUFFER_CHARS_COUNT = 4
 )
 
 // go test -run ^\QTestSdk\E$
@@ -15,29 +20,23 @@ func TestSdk(t *testing.T) {
 		mylog.Info("github ci windows machine not support nested vt-x virtualization,skip test")
 		return
 	}
+	callback := purego.NewCallback(func(text *byte) int {
+		fmt.Println("Received data:", BytePointerToString(text))
+		return 0
+	})
+	SetTextMessageCallback(unsafe.Pointer(callback))
+	InterpreterEx("help !monitor")
+
 	mylog.Call(func() {
+
 		assert.True(t, VmxSupportDetection())
 		assert.True(t, SetCustomDriverPathEx(SysPath))
-
-		mylog.Call(func() {
-			buffer := SetTextMessageCallbackUsingSharedBuffer(unsafe.Pointer(reflect.ValueOf(LogCallback).Pointer()))
-			sharedBuffer := BytePointerToString((*byte)(buffer))
-			mylog.Info("SetTextMessageCallbackUsingSharedBuffer", sharedBuffer)
-			// SetTextMessageCallback(Callback(reflect.ValueOf(LogCallback).Pointer()))
-		})
-		//go func() {
-		//	for {
-		//		if len(logBuffer) > 1 {
-		//			println(BytePointerToString(&logBuffer[0]))
-		//		}
-		//	}
-		//}()
-
 		mylog.Trace("InstallVmmDriver", InstallVmmDriver())
 
 		// ConnectLocalDebugger()
-		// assert.True(t, Boolean2Bool(ConnectCurrentDebuggerUsingComPort(StringToBytePointer("127.0.0.1"), 8080)))
-		// assert.True(t, Boolean2Bool(StartProcess(&[]rune("C:\\Windows\\SysWOW64\\notepad.exe")[0])))
+		//assert.True(t, Boolean2Bool(ConnectCurrentDebuggerUsingComPort(StringToBytePointer("127.0.0.1"), 8080)))
+		assert.True(t, Boolean2Bool(ConnectRemoteDebuggerUsingNamedPipe(StringToBytePointer("\\\\.\\pipe\\HyperDbgPipe"), Boolean(True))))
+		assert.True(t, Boolean2Bool(StartProcess(&[]rune("C:\\Windows\\SysWOW64\\notepad.exe")[0])))
 
 		mylog.Trace("LoadVmm", LoadVmm())
 		// assert.True(t, Boolean2Bool(ConnectRemoteDebuggerUsingNamedPipe(StringToBytePointer("\\\\.\\pipe\\HyperDbgDebug"))))
@@ -78,3 +77,18 @@ bp nt!IopXxxControlFile
 g
 kq l 60
 */
+
+//func TestCallback(t *testing.T) {
+//	lib := mylog.Check2(syscall.LoadDLL("libhyperdbg.dll"))
+//	procSetTextMessageCallback := mylog.Check2(lib.FindProc("hyperdbg_u_set_text_message_callback"))
+//	procInterpreter := mylog.Check2(lib.FindProc("hyperdbg_u_interpreter"))
+//	callback := syscall.NewCallback(func(text *byte) int {
+//		fmt.Printf("Test in the handler | ")
+//		fmt.Println("Received data:", BytePointerToString(text))
+//		return 0
+//	})
+//	mylog.Check3(procSetTextMessageCallback.Call(callback))
+//	text := append([]byte("help !monitor"), 0)
+//	mylog.Check3(procInterpreter.Call(uintptr(unsafe.Pointer(&text[0]))))
+//	lib.Release()
+//}

@@ -2,8 +2,10 @@ package ux
 
 import (
 	"embed"
+	"fmt"
+	"github.com/ebitengine/purego"
+	"golang.org/x/sys/windows"
 	"path/filepath"
-	"reflect"
 	"time"
 	"unsafe"
 
@@ -37,6 +39,11 @@ var bar embed.FS
 var pageIco embed.FS
 
 func Run() {
+	callback := purego.NewCallback(func(text *byte) int {
+		fmt.Println("Received data:", sdk.BytePointerToString(text)) //todo check api name
+		return 0
+	})
+	sdk.SetTextMessageCallback(unsafe.Pointer(callback))
 	app.RunWithIco("HyperDbg "+winver.WindowVersion(), mainIcons, func(w *unison.Window) {
 		pages := NewTabPage()
 		w.Content().AddChild(pages.Layout())
@@ -190,7 +197,9 @@ func newToolbar() *toolbar {
 			mylog.Warning("KillProcess", sdk.KillProcess())
 		}),
 		run: widget.NewImageButton("run", m.Get("run.png"), func() {
-			mylog.Warning("StartProcess", sdk.StartProcess_(TargetExePath))
+			targetExePathPtr := windows.StringToUTF16Ptr(TargetExePath)
+			targetExePathInt32Ptr := (*int32)(unsafe.Pointer(targetExePathPtr))
+			mylog.Warning("StartProcess", sdk.StartProcess(targetExePathInt32Ptr))
 		}),
 		runthread: widget.NewImageButton("runthread", m.Get("runthread.png"), func() {}),
 		pause: widget.NewImageButton("pause", m.Get("pause.png"), func() {
@@ -252,14 +261,6 @@ func newToolbar() *toolbar {
 					mylog.Check(sdk.SetCustomDriverPathEx(sdk.SysPath))
 
 					mylog.Trace("Install Driver", sdk.InstallVmmDriver())
-
-					go func() {
-						mylog.Call(func() {
-							buffer := sdk.SetTextMessageCallbackUsingSharedBuffer(unsafe.Pointer(reflect.ValueOf(sdk.LogCallback).Pointer()))
-							sharedBuffer := sdk.BytePointerToString((*byte)(buffer))
-							mylog.Info("insall driver return", sharedBuffer)
-						})
-					}()
 				}))
 				newPanel.AddChild(widget.NewButton("Uninstall Driver", func() {
 					mylog.Trace("UninstallVmmDriver", sdk.UninstallVmmDriver())
@@ -267,11 +268,6 @@ func newToolbar() *toolbar {
 
 				newPanel.AddChild(widget.NewButton("Load Vmm", func() {
 					mylog.Trace("LoadVmm", sdk.LoadVmm())
-					mylog.Call(func() {
-						buffer := sdk.SetTextMessageCallbackUsingSharedBuffer(unsafe.Pointer(reflect.ValueOf(sdk.LogCallback).Pointer()))
-						sharedBuffer := sdk.BytePointerToString((*byte)(buffer))
-						mylog.Info("LoadVmm return", sharedBuffer)
-					})
 				}))
 				newPanel.AddChild(widget.NewButton("UnLoad Vmm", func() {
 					mylog.Trace("UnloadVmm", sdk.UnloadVmm())

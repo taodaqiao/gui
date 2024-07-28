@@ -10,7 +10,7 @@ import (
 func main() {
 	// testSdkCommands()
 	ux.Run() // wait ..........................
-	// testDisassembly() // quick show
+	//testDisassembly() // quick show
 	// testParsePe()
 	// testScript()
 }

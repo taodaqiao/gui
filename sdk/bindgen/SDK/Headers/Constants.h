@@ -18,7 +18,7 @@
 
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 10
-#define VERSION_PATCH 0
+#define VERSION_PATCH 1
 
 //
 // Example of __DATE__ string: "Jul 27 2012"
@@ -191,7 +191,7 @@ const unsigned char BuildSignature[] = {
  * @details the maximum packet size for sending over serial
  *
  */
-#define MaxSerialPacketSize 10 * NORMAL_PAGE_SIZE
+#define MaxSerialPacketSize 20 * NORMAL_PAGE_SIZE
 
 /**
  * @brief Final storage size of message tracing
@@ -565,7 +565,9 @@ const unsigned char BuildSignature[] = {
 
 #define MAX_TEMP_COUNT 128
 
-#define MAX_STACK_BUFFER_COUNT 128
+#define MAX_STACK_BUFFER_COUNT 256
+
+#define MAX_EXECUTION_COUNT 1000000
 
 // TODO: Extract number of variables from input of ScriptEngine
 // and allocate variableList Dynamically.

@@ -17,22 +17,6 @@ import (
 	"github.com/ddkwork/golibrary/stream/bitfield"
 )
 
-var LogBuffer = make([]byte, 1, 1024*8)
-
-func LogCallbackOk() {
-	LogCallback(&LogBuffer[0])
-}
-
-func LogCallback(message *Char) {
-	// println("LogCallback")
-	// mylog.Info("test", "LogCallback")
-}
-
-func LogCallback_() {
-	println("LogCallback")
-	// mylog.Info("test", "LogCallback")
-}
-
 func LOWORD(l uint32) uint16 { return uint16(l) }
 func LOBYTE(l uint32) uint8  { return byte(l) }
 func HIWORD(l uint32) uint16 { return uint16(l >> 16) }
@@ -101,10 +85,9 @@ func SetCustomDriverPathEx(DriverFilePath string) bool {
 	return Boolean2Bool(b)
 }
 
-func InterpreterEx(command string) (status string) { // todo decode command return status code as error string
+func InterpreterEx(command string) (status string) {
 	mylog.Info("InterpreterEx", "command: "+command)
 	code := Interpreter(StringToBytePointer(command))
-	// SetTextMessageCallback()
 	return string(code)
 }
 

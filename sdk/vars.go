@@ -21,12 +21,12 @@ var (
 	Upper48BitsAndLower8Bits                                                 = uint64(0xffffffffffff00ff)
 	VersionMajor                                                             = 0
 	VersionMinor                                                             = 10
-	VersionPatch                                                             = 0
+	VersionPatch                                                             = 1
 	MaximumPacketsCapacity                                                   = 1000
 	MaximumPacketsCapacityPriority                                           = 50
 	NormalPageSize                                                           = 4096 // PAGE_SIZE
 	PacketChunkSize                                                          = NormalPageSize
-	MaxSerialPacketSize                                                      = 10 * NormalPageSize
+	MaxSerialPacketSize                                                      = 20 * NormalPageSize
 	DbgPrintLimitation                                                       = 512
 	DebuggerEventTagStartSeed                                                = 0x1000000
 	DebuggerThreadDebuggingTagStartSeed                                      = 0x1000000
@@ -92,7 +92,7 @@ var (
 	X86FlagsReservedBits                                                     = 0xffc38028
 	X86FlagsFixed                                                            = 0x00000002
 	MaxTempCount                                                             = 128
-	MaxStackBufferCount                                                      = 128
+	MaxStackBufferCount                                                      = 256
 	MaxVarCount                                                              = 512
 	MaxFunctionNameLength                                                    = 32
 	DebuggerModifyEventsApplyToAllTag                                        = uint64(0xffffffffffffffff)
