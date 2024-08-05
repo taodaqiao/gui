@@ -3,16 +3,16 @@ package main
 import (
 	"github.com/ddkwork/HyperDbg/ux"
 	"github.com/ddkwork/app"
-	"github.com/richardwilkes/unison"
+	"github.com/ddkwork/unison"
 )
 
 // RtlGenRandom
 func main() {
 	// testSdkCommands()
-	ux.Run() // wait ..........................
-	//testDisassembly() // quick show
-	// testParsePe()
-	// testScript()
+	ux.Run()
+	//testDisassembly()
+	//testParsePe()
+	//testScript()
 }
 
 func testSdkCommands() {

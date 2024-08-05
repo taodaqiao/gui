@@ -16,7 +16,7 @@ import (
 	"github.com/ddkwork/app/ms/xed"
 	"github.com/ddkwork/app/widget"
 	"github.com/ddkwork/golibrary/mylog"
-	"github.com/richardwilkes/unison"
+	"github.com/ddkwork/unison"
 )
 
 func LayoutCpu() unison.Paneler {
@@ -174,7 +174,7 @@ func LayoutCpu() unison.Paneler {
 	BottomHSplit := widget.NewHSplit(
 		HexEditTab,
 		widget.NewTab("stack", "todo stack test", stackTable),
-		0.1)
+		0.3)
 	//todo add tab into hex editor and stack layout
 	/*
 		tabs := gi.NewTabs(downSplits)
@@ -200,7 +200,7 @@ func LayoutCpu() unison.Paneler {
 
 	top := widget.NewTab("cpu and reg", "", TopHSplit)
 	bottom := widget.NewTab("hex editor and stack", "", BottomHSplit)
-	vSplit := widget.NewVSplit(top, bottom, 0.1)
+	vSplit := widget.NewVSplit(top, bottom, 0.3)
 	return vSplit.Dock
 }
 

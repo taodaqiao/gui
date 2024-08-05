@@ -196,62 +196,6 @@ func TestBindSdk(t *testing.T) {
 			AdditionalParams: []string{},
 		}))
 		mylog.Check(pkg.WriteToDir("../"))
-
-		// generate bug fix
-		fixs := []string{
-			`	Uint64     = uint64
-	Puint64    = *uint64
-	GuestRegs  = GuestRegs`,
-			`// @brief struct for extra registers
-type GuestExtraRegisters = GuestExtraRegisters`,
-			`RegsEnum                          = RegsEnum`,
-		}
-
-		b := stream.NewBuffer("../sdk.go")
-		for _, fix := range fixs {
-			b.ReplaceAll(fix, "")
-		}
-		b.Replace("\nSizeT              = uint64", "", 1)
-		b.Replace("\nBool               = int32", "", 1)
-		b.Replace(`	Bool               = int32
-	Long               = int64
-	SizeT              = uint64`, `	Long               = int64`, 1)
-		b.ReplaceAll(`func ReadVendorString(*Char) {
-	bindlib.CCall1(__imp_hyperdbg_u_read_vendor_string.Addr(), bindlib.MarshallSyscall())
-}`, `func ReadVendorString(b*Char) {
-	bindlib.CCall1(__imp_hyperdbg_u_read_vendor_string.Addr(), bindlib.MarshallSyscall(b))
-}`)
-		b.ReplaceAll(`type (
-			PdebuggeeRegisterWriteDescription = *DebuggeeRegisterWriteDescription
-			Symbol                            = Symbol
-			Psymbol                           = *Symbol
-			HwdbgShortSymbol                  = HwdbgShortSymbol
-			PhwdbgShortSymbol                 = *HwdbgShortSymbol
-			SymbolBuffer                      = SymbolBuffer
-			PsymbolBuffer                     = *SymbolBuffer
-			SymbolMap                         = SymbolMap
-			PsymbolMap                        = *SymbolMap
-			ActionBuffer                      = ActionBuffer
-			PactionBuffer                     = *ActionBuffer
-			RegsEnum                          = RegsEnum
-		)`, `type (
-			PdebuggeeRegisterWriteDescription = *DebuggeeRegisterWriteDescription
-			//Symbol                            = Symbol
-			Psymbol                           = *Symbol
-			//HwdbgShortSymbol                  = HwdbgShortSymbol
-			PhwdbgShortSymbol                 = *HwdbgShortSymbol
-			//SymbolBuffer                      = SymbolBuffer
-			PsymbolBuffer                     = *SymbolBuffer
-			//SymbolMap                         = SymbolMap
-			PsymbolMap                        = *SymbolMap
-			//ActionBuffer                      = ActionBuffer
-			PactionBuffer                     = *ActionBuffer
-			//RegsEnum                          = RegsEnum
-		)`)
-		b.ReplaceAll(`	Qword      = uint64
-	Uint64     = uint64
-	Puint64    = *uint64`, `	Qword      = uint64 `)
-		stream.WriteGoFile("../sdk.go", b)
 	})
 }
 
@@ -275,7 +219,6 @@ typedef int rune;
 #define WCHAR_MIN   0
 #define WCHAR_MAX   65535
 
-typedef int bool ;
 typedef long LONG ;
 #define PVOID void*
 #define HANDLE void*
@@ -283,11 +226,10 @@ typedef long LONG ;
 typedef unsigned __int64   SIZE_T,*PSIZE_T;
 typedef unsigned __int64   time_t;
 typedef unsigned __int64   NTSTATUS;
-typedef char *  va_list;
 
 typedef struct _LIST_ENTRY {
-  struct _LIST_ENTRY *Flink;
-  struct _LIST_ENTRY *Blink;
+ struct _LIST_ENTRY *Flink;
+ struct _LIST_ENTRY *Blink;
 } LIST_ENTRY, *PLIST_ENTRY, PRLIST_ENTRY;
 
 #ifndef _In_
