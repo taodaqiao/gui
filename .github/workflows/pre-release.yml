@@ -27,7 +27,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22.5'
+          go-version: '1.23.0'
 
       - name: Install GCC on Windows
         run: choco install mingw
@@ -40,6 +40,12 @@ jobs:
 
       - name: Build project
         run: go build -x .
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3  # 上传生成的文件
+        with:
+          name: gui-executable
+          path: gui.exe  # 指定需要上传的可执行文件路径
 
       - name: Debug - Check GITHUB_REF
         run: |
@@ -58,7 +64,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22.5'
+          go-version: '1.23.0'
 
       - name: Install GCC on Windows
         run: choco install mingw
