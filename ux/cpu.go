@@ -447,7 +447,7 @@ func LayoutDisassemblyTable() unison.Paneler {
 			//for _, section := range f.Sections {
 			//	if section.String() == ".text" {
 			//		oep_file_offset = uint64(section.Header.PointerToRawData) + (oep_rva - uint64(section.Header.VirtualAddress))
-			//		mylog.Struct(section)
+			//		mylog.Struct("todo",section)
 			//		break
 			//	}
 			//}
@@ -472,7 +472,7 @@ func LayoutDisassemblyTable() unison.Paneler {
 			//
 			//fmt.Printf("oep_data: %x\n", oep_data[:20])
 			//// 使用反汇编工具解析数据
-			//x := xed.New(oep_data)
+			//x := xed.NewOrderedMap(oep_data)
 			//x.SetBaseAddress(oep_va)
 			//x.Decode64()
 			//for _, object := range x.AsmObjects {
@@ -1186,7 +1186,7 @@ func LayoutDisassemblyTable() unison.Paneler {
 		},
 		SelectionChangedCallback: func(root *widget.Node[xed.Disassembly]) {
 			for _, n := range root.SelectedRows(false) {
-				mylog.Struct(n.Data)
+				mylog.Struct("todo", n.Data)
 			}
 		},
 		SetRootRowsCallBack: SetRootRowsCallBack,
@@ -1409,7 +1409,7 @@ var testHexDat = []byte{
 	0xEB, 0x03, 0x48, 0x8B, 0xC8, 0x66, 0x2B, 0x4C, 0x24, 0x38, 0x66, 0x89, 0x4E, 0x26, 0x33, 0xC0,
 }
 
-var TargetExePath = sdk.SysPath
+var TargetExePath = sdk.TargetFilePath
 
 /*
 0019ECEC   77715BFE  /CALL 到 DeviceIoControl 来自 77715BF8

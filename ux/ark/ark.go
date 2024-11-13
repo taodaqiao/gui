@@ -3,16 +3,15 @@ package ark
 import (
 	"fmt"
 
-	"github.com/ddkwork/app/ms/packer"
-
 	"github.com/ddkwork/HyperDbg/sdk"
 	"github.com/ddkwork/app"
 	"github.com/ddkwork/app/ms"
 	"github.com/ddkwork/app/ms/driverTool/environment"
 	"github.com/ddkwork/app/ms/hook/winver"
+	"github.com/ddkwork/app/ms/packer"
 	"github.com/ddkwork/app/widget"
 	"github.com/ddkwork/golibrary/mylog"
-	"github.com/ddkwork/golibrary/stream/orderedmap"
+	"github.com/ddkwork/golibrary/stream"
 	"github.com/ddkwork/unison"
 )
 
@@ -68,7 +67,7 @@ func Layout() *unison.Panel {
 	widget.SetScrollLayout(splitPanel, 2)
 
 	left := widget.NewTableScrollPanel(table, header)
-	layouts := orderedmap.New(InvalidArksKind, func() unison.Paneler { return widget.NewPanel() })
+	layouts := stream.NewOrderedMap(InvalidArksKind, func() unison.Paneler { return widget.NewPanel() })
 	layouts.Set(KernelTablesKind, func() unison.Paneler {
 		table, header := widget.NewTable(ms.NtApi{}, widget.TableContext[ms.NtApi]{
 			ContextMenuItems: nil,
@@ -134,7 +133,7 @@ func Layout() *unison.Panel {
 			case PackerKind:
 				mylog.Todo("packer")
 				// pe包似乎有个检测壳的，看看全不全
-				// https://git.homegu.com/inc0d3/malware/blob/master/tools%2Funpacker%2Fthemida-2.x%2FThemida%20-%20Winlicense%20Ultra%20Unpacker%201.4.txt
+				// https://github.com/inc0d3/malware/blob/master/tools%2Funpacker%2Fthemida-2.x%2FThemida%20-%20Winlicense%20Ultra%20Unpacker%201.4.txt
 				// 实现themida，vmprotect脱壳插件
 				// todo dump overlay data
 				// 拖放文件进调试器之后自动识别vmp tmd wl等壳并更新壳名称到调试器的主窗口标题

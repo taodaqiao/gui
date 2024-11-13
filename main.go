@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/ddkwork/HyperDbg/sdk"
 	"github.com/ddkwork/HyperDbg/ux"
 	"github.com/ddkwork/app"
 	"github.com/ddkwork/unison"
@@ -9,10 +10,11 @@ import (
 // RtlGenRandom
 func main() {
 	// testSdkCommands()
+	sdk.TargetFilePath = "testdata/asm.exe"
 	ux.Run()
-	//testDisassembly()
-	//testParsePe()
-	//testScript()
+	// testDisassembly()
+	// testParsePe()
+	// testScript()
 }
 
 func testSdkCommands() {
