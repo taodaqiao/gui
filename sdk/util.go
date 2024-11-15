@@ -5,34 +5,13 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
-	"testing"
 	"unsafe"
-
-	"github.com/ddkwork/golibrary/stream"
-
-	"github.com/ddkwork/golibrary/assert"
 
 	"github.com/ddkwork/app/ms/hardwareIndo"
 	"github.com/ddkwork/golibrary/mylog"
+	"github.com/ddkwork/golibrary/stream"
 	"github.com/ddkwork/golibrary/stream/bitfield"
 )
-
-func LOWORD(l uint32) uint16 { return uint16(l) }
-func LOBYTE(l uint32) uint8  { return byte(l) }
-func HIWORD(l uint32) uint16 { return uint16(l >> 16) }
-func HIBYTE(l uint32) uint8  { return byte(l >> 24) }
-
-func TestSizeof(t *testing.T) {
-	// assert.Equal(t, 11, binary.Size(DEBUGGER_REMOTE_PACKET{}))
-}
-
-func TestHIBYTE(t *testing.T) {
-	v := uint32(0x11223344)
-	assert.Equal(t, byte(0x11), HIBYTE(v))
-	assert.Equal(t, uint16(0x1122), HIWORD(v))
-	assert.Equal(t, byte(0x44), LOBYTE(v))
-	assert.Equal(t, uint16(0x3344), LOWORD(v))
-}
 
 func VmxSupportDetection() (ok bool) {
 	hard := hardwareIndo.New()
@@ -85,9 +64,9 @@ func SetCustomDriverPathEx(DriverFilePath string) bool {
 	return Boolean2Bool(b)
 }
 
-func InterpreterEx(command string) (status string) {
-	mylog.Info("InterpreterEx", "command: "+command)
-	code := Interpreter(StringToBytePointer(command))
+func RunCommandEx(command string) (status string) {
+	mylog.Info("command", command)
+	code := RunCommand(StringToBytePointer(command))
 	return string(code)
 }
 
