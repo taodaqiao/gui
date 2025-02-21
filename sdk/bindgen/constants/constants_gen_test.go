@@ -1,6 +1,7 @@
 package constants
 
 import (
+	"github.com/ddkwork/golibrary/safemap"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -20,20 +21,20 @@ func TestGenConstants(t *testing.T) {
 }
 
 func genConstants(fileName string) {
-	m := safemap.NewOrdered[string, string]()
-	for i, s := range stream.NewBuffer(fileName).ToLines() {
-		if i == 4 {
-			// break // test
-		}
+	m := new(safemap.M[string, string])
+	for s := range stream.ReadFileToLines(fileName) {
+		//if i == 4 {
+		//	// break // test
+		//}
 		split := strings.Split(s, " ")
 		v := split[1]
 		if fileName == "ioctl.txt" {
 			v = "0x" + v
 		}
-		m.Set(stream.ToCamelUpper(split[0], false), v)
+		m.Set(stream.ToCamelUpper(split[0]), v)
 	}
 
-	kind := stream.ToCamelUpper(stream.BaseName(fileName), false) + "Kind"
+	kind := stream.ToCamelUpper(stream.BaseName(fileName)) + "Kind"
 
 	g := stream.NewGeneratedFile()
 	g.P("package constants")
@@ -54,7 +55,7 @@ func genConstants(fileName string) {
 	g.P("switch k {")
 	for _, p := range m.List() {
 		g.P("case ", p.Value, ":")
-		g.P("return ", strconv.Quote(stream.ToCamelUpper(p.Key, false)))
+		g.P("return ", strconv.Quote(stream.ToCamelUpper(p.Key)))
 	}
 	g.P("default:")
 	g.P("return \"unknown ", kind, " \"+fmt.Sprint(k)")

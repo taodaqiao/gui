@@ -112,7 +112,7 @@ func TestName(t *testing.T) {
 
 func TestBindMacros(t *testing.T) {
 	headerFile := "merged_headers.h"
-	macros := extractMacros(stream.NewBuffer(headerFile).ToLines())
+	macros := extractMacros(stream.ReadFileToLines(headerFile))
 	// println(macros.GoString())
 	// return
 	mylog.Trace("number of macros", macros.Len())
@@ -192,10 +192,10 @@ func TestBindMacros(t *testing.T) {
 		//}
 		v := value
 		if isAlphabetOrUnderscore(v) {
-			v = stream.ToCamelUpper(v, false)
+			v = stream.ToCamelUpper(v)
 		}
 
-		k = stream.ToCamelUpper(k, false)
+		k = stream.ToCamelUpper(k)
 		switch {
 		case strings.HasPrefix(k, "DEBUGGER_ERROR"):
 			after, found := strings.CutPrefix(k, "DEBUGGER_ERROR")
@@ -207,7 +207,7 @@ func TestBindMacros(t *testing.T) {
 			enumIoctls.Set(k, k)
 		}
 
-		g.P(stream.ToCamelUpper(k, false) + "=" + v)
+		g.P(stream.ToCamelUpper(k) + "=" + v)
 		macros.Delete(k)
 		return true
 	})
