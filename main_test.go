@@ -4,7 +4,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/ddkwork/golibrary/mylog"
@@ -12,15 +12,39 @@ import (
 )
 
 func TestUpdateAppModule(t *testing.T) {
-	if !stream.IsDir("D:\\workspace\\workspace\\demo\\app") {
-		return
-	}
+	mylog.Check(os.Chdir("D:\\workspace\\workspace\\demo\\unison"))
+	cmd := "go get -x " + "github.com/ddkwork/toolbox" + "@" + stream.GetLastCommitHashLocal("D:\\workspace\\workspace\\demo\\toolbox")
+	stream.RunCommand(cmd)
+	stream.RunCommand("go mod tidy")
+	cleaner()
+
 	mylog.Check(os.Chdir("D:\\workspace\\workspace\\demo\\app"))
-	session := stream.RunCommand("git log -1 --format=\"%H\"")
+	cmd = "go get -x " + "github.com/ddkwork/unison" + "@" + stream.GetLastCommitHashLocal("D:\\workspace\\workspace\\demo\\unison")
+	stream.RunCommand(cmd)
+	stream.RunCommand("go mod tidy")
+	cleaner()
+
 	mylog.Check(os.Chdir("D:\\workspace\\workspace\\gui"))
-	id := mylog.Check2(strconv.Unquote(session.Output.String()))
-	mylog.Info("id", id)
-	stream.RunCommand("go get github.com/ddkwork/app@" + id)
+	cmd = "go get -x " + "github.com/ddkwork/app" + "@" + stream.GetLastCommitHashLocal("D:\\workspace\\workspace\\demo\\app")
+	stream.RunCommand(cmd)
+	stream.RunCommand("go mod tidy")
+	cleaner()
+}
+
+func cleaner() {
+	for s := range strings.Lines(`
+	go install mvdan.cc/gofumpt@latest
+	gofumpt -l -w .
+	//go install honnef.co/go/tools/cmd/staticcheck@latest
+	//staticcheck ./...
+	//go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+`) {
+		s = strings.TrimSpace(s)
+		if strings.HasPrefix(s, "::") || strings.HasPrefix(s, "//") || s == "" {
+			continue
+		}
+		stream.RunCommand(s)
+	}
 }
 
 func TestUpdateSDKAndBin(t *testing.T) { // todo use abs path, don't copy bin dir to here
