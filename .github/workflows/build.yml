@@ -1,55 +1,103 @@
-name: Build and Test on Windows 
+name: Pre-release HyperDbg and GUI
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main
+    tags:
+      - v*.**
+      - weekly.**
+      - 0.**
+
+env:
+  RELEASE_ZIP_FILE_NAME: HyperDbg
 
 jobs:
-  build:
-    runs-on: windows-latest
+  test-on-multiple-os:
+    name: Test on multiple OS
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest ]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Download latest HyperDbg release
-      run: |
-        curl -s https://api.github.com/repos/HyperDbg/HyperDbg/releases/latest `
-        | jq -r '.assets[] | select(.name | test("\\.zip$")) | .browser_download_url' `
-        | % { Invoke-WebRequest $_ -OutFile 'hyperdbg.zip' }
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24.0'
 
-    - name: Unzip HyperDbg
-      run: |
-        Expand-Archive -Path hyperdbg.zip -DestinationPath hyperdbg
+      - name: Install GCC on Windows
+        run: choco install mingw
 
-    - name: List contents of HyperDbg
-      run: |
-        Get-ChildItem -Path hyperdbg -Recurse
+      - name: Install dependencies
+        run: go mod tidy
 
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: '1.24.0'
+      - name: Run tests
+        run: go test ./...
 
-    - name: Install dependencies
-      run: go mod tidy
+      - name: Build project
+        run: go build -x .
 
-    - name: Copy SDK directory and bin to target path,latest remove
-      run: |
-# 1  remove HyperDbg/release/SDK/Libraries
-# 2  xcopy hyperdbg\SDK\* .\gui\sdk\bindgen\SDK\ /E /H /Y
-# 3  copy  ".exe", ".dll", ".sys" from HyperDbg/release into sdk/bin
-# 4  remove HyperDbg.zip and HyperDbg folder
-# now merge into pre-release.yml for generating GitHub Changelog Generator  and release etc
-# Additionally, currently only bin sums from builds on the dev branch will allow gui builds to succeed
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3  # 上传生成的文件
+        with:
+          name: gui-executable
+          path: gui.exe  # 指定需要上传的可执行文件路径
 
+      - name: Debug - Check GITHUB_REF
+        run: |
+          echo "GITHUB_REF is: ${{ github.ref }}"
+          echo "GITHUB_EVENT_REF is: ${{ github.event.ref }}"
 
-#    - name: Run tests for auto bind sdk
-#      run: go test ./...
-#
-#    - name: Build the project
-#      run: go build -x .
-#      pack HyperDbg.exe to HyperDbg.zip
-#      upload HyperDbg.zip to release
+  package-and-release:
+    needs: test-on-multiple-os
+    runs-on: windows-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24.0'
+
+      - name: Install GCC on Windows
+        run: choco install mingw
+
+      - name: Install dependencies
+        run: go mod tidy
+
+      - name: Build project
+        run: go build -x .
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0.0'
+
+      - name: Install GitHub Changelog Generator
+        run: gem install github_changelog_generator
+
+      - name: Generate Changelog
+        run: github_changelog_generator --user ${{ github.repository_owner }} --project ${{ github.event.repository.name }} --token ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create source code archive
+        run: powershell -Command "Get-ChildItem -Recurse | Where-Object { $_.FullName -notmatch '\.git' -and $_.Extension -notmatch '\.dll|\.sys|\.exe' } | Compress-Archive -DestinationPath ${env:RELEASE_ZIP_FILE_NAME}-${{ github.ref_name }}.zip -CompressionLevel Optimal"
+
+      - name: Create binaries archive
+        run: powershell -Command "Get-ChildItem -Recurse -Include  'hyperdbgui.exe' | Compress-Archive -DestinationPath binaries-${{ github.ref_name }}.zip"
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ${{ env.RELEASE_ZIP_FILE_NAME }}-${{ github.ref_name }}.zip
+            binaries-${{ github.ref_name }}.zip
+          body_path: CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.tk }}
